@@ -1,7 +1,7 @@
 {
     "name": "hymate/hymate",
     "description": "The Hymate PHP common functions",
-    "keywords": ["functions"]
+    "keywords": ["functions"],
     "license": "MIT",
     "authors": [
         {
