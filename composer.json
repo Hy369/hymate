@@ -1,0 +1,23 @@
+{
+    "name": "hymate/hymate",
+    "description": "The Hymate PHP common functions",
+    "keywords": ["functions"]
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hylin Yin",
+            "homepage": "http://www.iphp8.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": { "Hymate": "src" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    }
+}
