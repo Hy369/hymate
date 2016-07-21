@@ -37,10 +37,6 @@ class ThumbnailTest extends \PHPUnit_Framework_TestCase
         $thumbnail->setFillColor('FF8000', 369);
         self::assertEquals(array('red' => 255, 'green' => 128, 'blue' => 0, 'alpha' => 127), $a->getValue($thumbnail));
 
-        $result = $thumbnail->setFillColor('#HYLIN');
-        self::assertFalse($result);
-
-        $thumbnail->setDebug(true);
         try {
             $thumbnail->setFillColor('#HYLIN');
             self::setExpectedException('Exception');
