@@ -61,6 +61,7 @@ class Thumbnail
             '15' => 'wbmp',
         );
         $this->fillColor = array('red' => 255, 'green' => 255, 'blue' => 255, 'alpha' => 0);
+        $this->imageWidth = $this->imageHeight = $this->imagetype = null;
     }
 
     /**
@@ -107,19 +108,24 @@ class Thumbnail
 
     /**
      * Gets the image infomation(imagetype, width, height).
+     *
+     * @return bool
      */
     private function getImageInfo()
     {
         if (!file_exists($this->imagePath)) {
             $this->debug(sprintf('The file "%s" does not existed.', $this->imagePath));
+            return false;
         }
         $imageInfo = @getimagesize($this->imagePath);
         if (false === $imageInfo) {
             $this->debug(sprintf('The file type must be %s.', join(', ', $this->allowedImagetypeMapping)));
+            return false;
         }
         $this->imagetype = $this->getImagetype($imageInfo[2]);
         $this->imageWidth = $imageInfo[0];
         $this->imageHeight = $imageInfo[1];
+        return true;
     }
 
     /**
@@ -128,12 +134,13 @@ class Thumbnail
      * @param string $color Colors in Hex
      * @param int $alpha
      * @return Thumbnail|bool
+     * @throws \Exception
      */
     public function setFillColor($color, $alpha = 0)
     {
         $color = ltrim($color, '#');
         if (6 !== strlen($color)) {
-            return $this->debug(sprintf('Invalid color format: %s', $color));
+            throw new \Exception(sprintf('Invalid color format: %s', $color));
         }
         $color  = str_split($color, 2);
         $this->fillColor['red'] = hexdec($color[0]);
@@ -165,9 +172,15 @@ class Thumbnail
 
     /**
      * Starts to create the thumbnail.
+     *
+     * @return string|false
      */
     public function create()
     {
+        if (is_null($this->imageWidth) || is_null($this->imageHeight) || is_null($this->imagetype)) {
+            return false;
+        }
+
         $thumbnailName = md5($this->imagePath) . '.png';
 
         if (file_exists($this->thumbnailPath . $thumbnailName) && !$this->debug) {
@@ -192,14 +205,15 @@ class Thumbnail
      * Validate the imagetype.
      *
      * @param int $index
-     * @return string
+     * @return string|bool
      */
     protected function getImagetype($index)
     {
         if (array_key_exists($index, $this->allowedImagetypeMapping)) {
             return $this->allowedImagetypeMapping[$index];
         } else {
-            return $this->debug(sprintf('The file type must be %s.', join(', ', $this->allowedImagetypeMapping)));
+            $this->debug(sprintf('The file type must be %s.', join(', ', $this->allowedImagetypeMapping)));
+            return false;
         }
     }
 
@@ -215,8 +229,6 @@ class Thumbnail
         if ($this->debug) {
             throw new \Exception($msg);
         }
-
-        return false;
     }
 
     /**
