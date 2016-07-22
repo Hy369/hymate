@@ -45,7 +45,7 @@ class Thumbnail
      */
     public function __construct($rootPath, $thumbnailPath, $thumbnailUrl)
     {
-        $this->rootPath = realpath($rootPath);
+        $this->rootPath = realpath($rootPath) . '/';
         if (false === $this->rootPath) {
             throw new \Exception(vsprintf('The root path: %s does not exist.', $this->rootPath));
         }
