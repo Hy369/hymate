@@ -23,6 +23,7 @@ class Thumbnail
     protected $debug;
     /** @var  Filesystem */
     protected $filesystem;
+    protected $rootPath;
     protected $thumbnailPath;
     protected $thumbnailUrl;
     protected $imagePath;
@@ -37,11 +38,17 @@ class Thumbnail
     /**
      * Thumbnail constructor.
      *
+     * @param string $rootPath
      * @param string $thumbnailPath
      * @param string $thumbnailUrl
+     * @throws \Exception if the root path does not exist.
      */
-    public function __construct($thumbnailPath, $thumbnailUrl)
+    public function __construct($rootPath, $thumbnailPath, $thumbnailUrl)
     {
+        $this->rootPath = realpath($rootPath);
+        if (false === $this->rootPath) {
+            throw new \Exception(vsprintf('The root path: %s does not exist.', $this->rootPath));
+        }
         $this->filesystem = new Filesystem();
         $this->filesystem->mkdir($thumbnailPath);
         $this->thumbnailPath = realpath($thumbnailPath) . '/';
@@ -100,6 +107,10 @@ class Thumbnail
      */
     public function setImage($src)
     {
+        $src = str_replace('\\', '/', $src);
+        if (substr($src, 0, 1) == '/') {
+            $src = $this->rootPath . substr($src, 1);
+        }
         $this->imagePath = $src;
         $this->getImageInfo();
 
@@ -114,7 +125,7 @@ class Thumbnail
     private function getImageInfo()
     {
         if (!file_exists($this->imagePath)) {
-            $this->debug(sprintf('The file "%s" does not existed.', $this->imagePath));
+            $this->debug(sprintf('The file "%s" does not exist.', $this->imagePath));
             return false;
         }
         $imageInfo = @getimagesize($this->imagePath);
