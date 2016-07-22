@@ -53,7 +53,7 @@ class Thumbnail
         $this->filesystem->mkdir($thumbnailPath);
         $this->thumbnailPath = realpath($thumbnailPath) . '/';
 
-        $this->thumbnailUrl = trim($thumbnailUrl, '/') . '/';
+        $this->thumbnailUrl = rtrim($thumbnailUrl, '/') . '/';
 
         $this->debug = false;
         $this->thumbnailWidth = 300;
@@ -115,28 +115,6 @@ class Thumbnail
         $this->getImageInfo();
 
         return $this;
-    }
-
-    /**
-     * Gets the image infomation(imagetype, width, height).
-     *
-     * @return bool
-     */
-    private function getImageInfo()
-    {
-        if (!file_exists($this->imagePath)) {
-            $this->debug(sprintf('The file "%s" does not exist.', $this->imagePath));
-            return false;
-        }
-        $imageInfo = @getimagesize($this->imagePath);
-        if (false === $imageInfo) {
-            $this->debug(sprintf('The file type must be %s.', join(', ', $this->allowedImagetypeMapping)));
-            return false;
-        }
-        $this->imagetype = $this->getImagetype($imageInfo[2]);
-        $this->imageWidth = $imageInfo[0];
-        $this->imageHeight = $imageInfo[1];
-        return true;
     }
 
     /**
@@ -210,6 +188,28 @@ class Thumbnail
         imagepng($imageHandler, $this->thumbnailPath . $thumbnailName);
 
         return $this->thumbnailUrl . $thumbnailName;
+    }
+
+    /**
+     * Gets the image infomation(imagetype, width, height).
+     *
+     * @return bool
+     */
+    protected function getImageInfo()
+    {
+        if (!file_exists($this->imagePath)) {
+            $this->debug(sprintf('The file "%s" does not exist.', $this->imagePath));
+            return false;
+        }
+        $imageInfo = @getimagesize($this->imagePath);
+        if (false === $imageInfo) {
+            $this->debug(sprintf('The file type must be %s.', join(', ', $this->allowedImagetypeMapping)));
+            return false;
+        }
+        $this->imagetype = $this->getImagetype($imageInfo[2]);
+        $this->imageWidth = $imageInfo[0];
+        $this->imageHeight = $imageInfo[1];
+        return true;
     }
 
     /**
