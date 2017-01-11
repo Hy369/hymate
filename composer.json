@@ -14,7 +14,7 @@
         "symfony/filesystem": ">2.0"
     },
     "autoload": {
-        "psr-4": { "Hymate\\": "src" }
+        "psr-4": { "Hymate\\": "src/Hymate" }
     },
     "extra": {
         "branch-alias": {
